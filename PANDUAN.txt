@@ -1,0 +1,73 @@
+PONDOK PESANTREN SABILUNNAJAT — PETUNJUK
+
+STATUS
+Paket aplikasi, bukan website yang sudah online. Nama pesantren berasal dari pengguna.
+Tagline adalah contoh, bukan slogan resmi. Tidak ada alamat, program, atau sejarah yang dikarang.
+Pendaftaran awalnya DITUTUP; isi profil/kontak/persyaratan sebelum membukanya.
+
+KEBUTUHAN
+Python 3.10+ dan koneksi internet saat memasang dependensi. Hosting harus mendukung Python,
+proses WSGI, dan penyimpanan permanen. Ini bukan tema WordPress atau aplikasi PHP.
+
+MULAI DI KOMPUTER
+1. Ekstrak ZIP lalu buka terminal di folder yang memuat app.py.
+2. python -m venv .venv
+3. Aktifkan lingkungan:
+   Windows: .venv\Scripts\activate
+   macOS/Linux: source .venv/bin/activate
+4. pip install -r requirements.txt
+5. flask --app app create-admin
+   Masukkan username dan kata sandi minimal 12 karakter. Tidak ada akun bawaan.
+6. python app.py
+7. Buka http://127.0.0.1:5000 dan http://127.0.0.1:5000/admin
+
+PENGGUNAAN
+- Login; isi Profil & pengaturan; simpan.
+- WhatsApp menggunakan angka kode negara tanpa +, misal 628123456789.
+- Profil dapat memuat sejarah, pengasuh, visi-misi dalam teks biasa.
+- Tambah/edit/hapus berita dari panel. HTML tidak dieksekusi.
+- Isi program, persyaratan, kontak dan jadwal; buka pendaftaran.
+- Lihat pendaftar, cari nama/kode, ubah status, ekspor CSV, atau hapus permanen.
+- Pendaftar memperoleh kode bukti kirim, bukan keputusan penerimaan.
+- Status hanya tersedia di admin; tidak ada halaman publik yang membocorkan pendaftar.
+- Data: nama santri, kategori Putra/Putri, wali, WhatsApp, alamat, program.
+- Tidak meminta NIK, tanggal lahir, dokumen, atau data kesehatan.
+- Kata sandi admin disimpan sebagai hash, formulir dilindungi CSRF.
+
+PENYIMPANAN & CADANGAN
+Data disimpan di instance/pesantren.sqlite3, bukan localStorage browser.
+Cadangkan direktori instance secara terenkripsi dan batasi aksesnya.
+Untuk backup sederhana, hentikan aplikasi, salin direktori instance ke lokasi aman,
+lalu jalankan kembali. Pemulihan: hentikan aplikasi dan pulihkan salinan.
+Simpan secret.key secara rahasia; jangan unggah instance ke repositori publik.
+Hasil ekspor CSV memuat data pribadi; jangan bagikan ke publik.
+Tetapkan masa simpan yang disetujui pengelola. Hapus data yang tidak diperlukan;
+penghapusan di aplikasi tidak menghapus salinan cadangan/CSV yang sudah dibuat.
+
+PEMASANGAN ONLINE — UNTUK OPERATOR HOSTING
+1. Pilih hosting Python dengan disk persisten. Jangan memakai disk sementara.
+2. Pasang dependensi, tetapkan DATA_DIR ke direktori privat persisten, jalankan create-admin.
+3. Jalankan waitress-serve --listen=127.0.0.1:8080 app:app
+4. Atur reverse proxy HTTPS menuju layanan tersebut, domain, serta sertifikat TLS.
+5. Tetapkan COOKIE_SECURE=1 jika sudah HTTPS. Jangan gunakan server python app.py
+   untuk produksi. Jangan aktifkan debugger.
+6. SECRET_KEY opsional melalui environment; jika kosong, kunci lokal acak dibuat otomatis.
+   Gunakan kunci yang sama jika beberapa proses menggunakan aplikasi.
+7. Batas login/kirim memakai Flask-Limiter. Default memory:// hanya per proses dan hilang
+   saat restart. Untuk produksi, gunakan backend limiter persisten yang didukung (misalnya
+   Redis), pasang dependensinya dan set RATELIMIT_STORAGE_URI sesuai layanan Anda.
+8. Di belakang proxy, konfigurasi alamat IP klien dan trust proxy secara tepat sesuai
+   topologi hosting. Paket tidak mempercayai X-Forwarded-For secara otomatis. Tanpa
+   pengaturan itu, pembatasan dapat menganggap seluruh pengunjung sebagai satu IP.
+9. Atur firewall, akses file database, backup, pemantauan, kebijakan privasi dan masa simpan.
+10. Uji registrasi dummy, login, ekspor, pemulihan backup, lalu tinjau keamanan sebelum
+    menerima data asli, terutama data anak. Paket tidak menjamin kepatuhan hukum otomatis.
+
+BATAS VERSI
+Belum mencakup unggah foto/logo/galeri, pembayaran, notifikasi WhatsApp otomatis,
+reset kata sandi melalui email, peran staf, riwayat audit, atau akun calon santri.
+Tidak menyertakan domain, hosting, atau pemasangan online.
+Kebijakan privasi pada formulir bersifat ringkas; pengelola harus meninjaunya sebelum rilis.
+
+ACUAN TEKNIS
+https://flask.palletsprojects.com/en/stable/deploying/
